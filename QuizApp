@@ -1,0 +1,87 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class QuizApp extends JFrame {
+    private JLabel questionLabel;
+    private JRadioButton option1, option2, option3, option4;
+    private ButtonGroup buttonGroup;
+    private JButton submitButton;
+    private int score = 0;
+
+    public QuizApp() {
+        setTitle("Quiz App");
+        setSize(400, 250);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        // Create a panel for the components
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(6, 1));
+
+        // Question label
+        questionLabel = new JLabel("What is the capital of France?");
+        panel.add(questionLabel);
+
+        // Radio buttons for answer options
+        option1 = new JRadioButton("New York");
+        option2 = new JRadioButton("London");
+        option3 = new JRadioButton("Berlin");
+        option4 = new JRadioButton("Paris");
+        buttonGroup = new ButtonGroup();
+        buttonGroup.add(option1);
+        buttonGroup.add(option2);
+        buttonGroup.add(option3);
+        buttonGroup.add(option4);
+        panel.add(option1);
+        panel.add(option2);
+        panel.add(option3);
+        panel.add(option4);
+
+        // Submit button
+        submitButton = new JButton("Submit");
+        panel.add(submitButton);
+
+        // Add the panel to the frame
+        add(panel);
+
+        // Register the submit button click event
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                checkAnswer();
+            }
+        });
+    }
+
+    private void checkAnswer() {
+        if (option4.isSelected()) {
+            score++;
+        }
+
+        // Display the score
+        JOptionPane.showMessageDialog(this, "Your score: " + score);
+
+        // Reset the radio buttons and increment the question
+        buttonGroup.clearSelection();
+        nextQuestion();
+    }
+
+    private void nextQuestion() {
+        // Provide the next question and options
+        questionLabel.setText("What is the largest planet in our solar system?");
+        option1.setText("Venus");
+        option2.setText("Mars");
+        option3.setText("Earth");
+        option4.setText("Jupiter");
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                QuizApp app = new QuizApp();
+                app.setVisible(true);
+            }
+        });
+    }
+}
