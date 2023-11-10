@@ -1,0 +1,100 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class SimpleCalculatorApp {
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new SimpleCalculatorFrame();
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setVisible(true);
+        });
+    }
+}
+
+class SimpleCalculatorFrame extends JFrame {
+    private JTextField display;
+    private double firstOperand = 0.0;
+    private String operator = "";
+    private boolean startNewCalculation = true;
+
+    public SimpleCalculatorFrame() {
+        setTitle("Simple Calculator");
+        setLayout(new BorderLayout());
+        setSize(200, 250);
+
+        display = new JTextField("0");
+        display.setEditable(false);
+        add(display, BorderLayout.NORTH);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(5, 4));
+
+        String[] buttonLabels = {
+            "7", "8", "9", "/",
+            "4", "5", "6", "*",
+            "1", "2", "3", "-",
+            "0", "C", "=", "+"
+        };
+
+        for (String label : buttonLabels) {
+            JButton button = new JButton(label);
+            button.addActionListener(new ButtonClickListener());
+            buttonPanel.add(button);
+        }
+
+        add(buttonPanel, BorderLayout.CENTER);
+    }
+
+    private class ButtonClickListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            String command = e.getActionCommand();
+
+            if (Character.isDigit(command.charAt(0))) {
+                if (startNewCalculation) {
+                    display.setText(command);
+                    startNewCalculation = false;
+                } else {
+                    display.setText(display.getText() + command);
+                }
+            } else if (command.equals("C")) {
+                display.setText("0");
+                startNewCalculation = true;
+                operator = "";
+            } else if (command.equals("=")) {
+                double secondOperand = Double.parseDouble(display.getText());
+                double result = performCalculation(firstOperand, secondOperand, operator);
+                display.setText(String.valueOf(result));
+                startNewCalculation = true;
+                operator = "";
+            } else {
+                if (!operator.isEmpty()) {
+                    return; // Only one operator at a time
+                }
+                firstOperand = Double.parseDouble(display.getText());
+                operator = command;
+                startNewCalculation = true;
+            }
+        }
+    }
+
+    private double performCalculation(double num1, double num2, String op) {
+        switch (op) {
+            case "+":
+                return num1 + num2;
+            case "-":
+                return num1 - num2;
+            case "*":
+                return num1 * num2;
+            case "/":
+                if (num2 != 0) {
+                    return num1 / num2;
+                } else {
+                    return Double.NaN; // Handle division by zero
+                }
+            default:
+                return num2;
+        }
+    }
+}
